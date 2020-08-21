@@ -7,8 +7,8 @@ public class PlateInterpreter {
 		
 	String[] input;
 	
-	ArrayList<Character> onefunctions = new ArrayList<Character>(Arrays.asList('|', 'p', 'n'));
-	ArrayList<Character> twofunctions = new ArrayList<Character>(Arrays.asList('+','-','*','/'));
+	ArrayList<Character> onefunctions = new ArrayList<Character>(Arrays.asList('|', 'p', 'n', '"'));
+	ArrayList<Character> twofunctions = new ArrayList<Character>(Arrays.asList('+','-','*','/', '^'));
 	ArrayList<Character> numbers = new ArrayList<Character>(Arrays.asList('᐀','ᐁ','ᐂ','ᐃ','ᐄ','ᐅ','ᐆ','ᐇ','ᐈ','ᐉ','ᐋ','ᐌ','ᐍ','ᐎ','ᐏ','ᐐ','ᐑ','ᐒ','ᐓ','ᐔ','ᐕ','ᐖ','ᐗ','ᐘ','ᐙ','ᐚ','ᐛ','ᐜ','ᐝ','ᐞ','ᐟ','ᐠ','ᐡ','ᐢ','ᐣ','ᐤ','ᐥ','ᐦ','ᐧ','ᐨ','ᐩ','ᐪ','ᐫ','ᐬ','ᐭ','ᐮ','ᐯ','ᐰ','ᐱ','ᐲ','ᐳ','ᐴ','ᐵ','ᐶ','ᐷ','ᐸ','ᐹ','ᐺ','ᐻ','ᐼ','ᐽ','ᐾ','ᐿ','ᑀ','ᑁ','ᑂ','ᑃ','ᑄ','ᑅ','ᑆ','ᑇ','ᑈ','ᑉ','ᑋ','ᑌ','ᑍ','ᑎ','ᑏ','ᑐ','ᑑ','ᑒ','ᑓ','ᑔ','ᑕ','ᑖ','ᑗ','ᑘ','ᑙ','ᑚ','ᑛ','ᑜ','ᑝ','ᑞ','ᑟ','ᑠ','ᑡ','ᑢ','ᑣ','ᑤ','ᑥ'));
 
 	public PlateInterpreter(String[] input) {
@@ -50,6 +50,8 @@ public class PlateInterpreter {
 				return new Object();
 			case 'n':
 				return negate(eval(code.substring(1)));
+			case '"':
+				return evalString(code.substring(1));
 			}
 		} else if (twofunctions.contains(c)) {
 			switch (c) {
@@ -61,9 +63,21 @@ public class PlateInterpreter {
 				return multiply(eval(code.substring(1)),eval(code.substring(evalLength(code.substring(1))+2)));
 			case '/':
 				return divide(eval(code.substring(1)),eval(code.substring(evalLength(code.substring(1))+2)));
+			case '^':
+				return exponentiate(eval(code.substring(1)),eval(code.substring(evalLength(code.substring(1))+2)));
 			}
 		}
 		return new Object();
+	}
+	
+	public String evalString(String code) {
+		String a = "";
+		for (int i = 0; i < code.length(); i++) {
+			char c = code.charAt(i);
+			if (c == ',' || c == '\n') return a;
+			else a += c;
+		}
+		return a;
 	}
 	
 	public int evalLength(String code) {
@@ -96,6 +110,7 @@ public class PlateInterpreter {
 	
 	public Object add(Object a, Object b) {
 		if (a instanceof Double && b instanceof Double) return (Double) ((double) a + (double) b);
+		if (a instanceof String && b instanceof String) return (String) a + (String) b;
 		return 0;
 	}
 	
@@ -106,11 +121,25 @@ public class PlateInterpreter {
 	
 	public Object multiply(Object a, Object b) {
 		if (a instanceof Double && b instanceof Double) return (Double) ((double) a * (double) b);
+		System.out.println(a instanceof String);
+		System.out.println(b instanceof Double);
+		if (a instanceof String && b instanceof Double) {
+			String s = "";
+			for (int i = 0; i < (Double) b; i++) {
+				s += a;
+			}
+			return s;
+		}
 		return 0;
 	}
 	
 	public Object divide(Object a, Object b) {
 		if (a instanceof Double && b instanceof Double) return (Double) ((double) a / (double) b);
+		return 0;
+	}
+	
+	public Object exponentiate(Object a, Object b) {
+		if (a instanceof Double && b instanceof Double) return (Double) Math.pow((double) a, (double) b);
 		return 0;
 	}
 	
