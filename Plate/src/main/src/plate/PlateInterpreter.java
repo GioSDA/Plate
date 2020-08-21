@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PlateInterpreter {
-	
-	//TODO: FIX MULTI FUNCTION COMMA ERROR 
-	
+		
 	String[] input;
 	
 	ArrayList<Character> onefunctions = new ArrayList<Character>(Arrays.asList('|', 'p', 'n'));
