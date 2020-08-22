@@ -8,11 +8,12 @@ public class Main {
 
 	public static void main(String[] args) {
 		if (args.length == 0) {
-			Scanner s = new Scanner(System.in);
+			@SuppressWarnings("resource")
+			Scanner s = new Scanner(System.in).useDelimiter("\r");
 			
 			String[] input = s.next().split(" ");
 			String code = input[0];
-			
+						
 			if (input.length > 1) {
 				Plate p = new Plate(code, removeIndexOne(input));
 				p.run();

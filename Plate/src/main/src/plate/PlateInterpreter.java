@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PlateInterpreter {
-		
+	
+	int inputNum = -1;
 	String[] input;
 	
+	ArrayList<Character> values = new ArrayList<Character>(Arrays.asList('i','π'));
 	ArrayList<Character> onefunctions = new ArrayList<Character>(Arrays.asList('|', 'p', 'n', '"'));
 	ArrayList<Character> twofunctions = new ArrayList<Character>(Arrays.asList('+','-','*','/', '^'));
 	ArrayList<Character> numbers = new ArrayList<Character>(Arrays.asList('᐀','ᐁ','ᐂ','ᐃ','ᐄ','ᐅ','ᐆ','ᐇ','ᐈ','ᐉ','ᐋ','ᐌ','ᐍ','ᐎ','ᐏ','ᐐ','ᐑ','ᐒ','ᐓ','ᐔ','ᐕ','ᐖ','ᐗ','ᐘ','ᐙ','ᐚ','ᐛ','ᐜ','ᐝ','ᐞ','ᐟ','ᐠ','ᐡ','ᐢ','ᐣ','ᐤ','ᐥ','ᐦ','ᐧ','ᐨ','ᐩ','ᐪ','ᐫ','ᐬ','ᐭ','ᐮ','ᐯ','ᐰ','ᐱ','ᐲ','ᐳ','ᐴ','ᐵ','ᐶ','ᐷ','ᐸ','ᐹ','ᐺ','ᐻ','ᐼ','ᐽ','ᐾ','ᐿ','ᑀ','ᑁ','ᑂ','ᑃ','ᑄ','ᑅ','ᑆ','ᑇ','ᑈ','ᑉ','ᑋ','ᑌ','ᑍ','ᑎ','ᑏ','ᑐ','ᑑ','ᑒ','ᑓ','ᑔ','ᑕ','ᑖ','ᑗ','ᑘ','ᑙ','ᑚ','ᑛ','ᑜ','ᑝ','ᑞ','ᑟ','ᑠ','ᑡ','ᑢ','ᑣ','ᑤ','ᑥ'));
@@ -33,7 +35,7 @@ public class PlateInterpreter {
 			double num = 0;
 			for (int i = 0; i < code.length(); i++) {
 				char ca = code.charAt(i);
-				if (onefunctions.contains(ca) || twofunctions.contains(ca) || ca == ',') {
+				if (onefunctions.contains(ca) || twofunctions.contains(ca) || values.contains(ca) || ca == ',') {
 					return num;
 				} else {
 					num *= 100;
@@ -46,8 +48,9 @@ public class PlateInterpreter {
 			case '|':
 				return absolute(eval(code.substring(1)));
 			case 'p':
-				System.out.println(eval(code.substring(1)));
-				return new Object();
+				Object a = new Object();
+				System.out.println(a = eval(code.substring(1)));
+				return a;
 			case 'n':
 				return negate(eval(code.substring(1)));
 			case '"':
@@ -65,6 +68,14 @@ public class PlateInterpreter {
 				return divide(eval(code.substring(1)),eval(code.substring(evalLength(code.substring(1))+2)));
 			case '^':
 				return exponentiate(eval(code.substring(1)),eval(code.substring(evalLength(code.substring(1))+2)));
+			}
+		} else if (values.contains(c)) {
+			switch(c) {
+			case 'i':
+				inputNum++;
+				return input();
+			case 'π':
+				return Math.PI;
 			}
 		}
 		return new Object();
@@ -92,6 +103,14 @@ public class PlateInterpreter {
 			if (a < 0) return i;
  		}
 		return code.length();
+	}
+	
+	////////INPUT////////
+	
+	public Object input() {
+		String a = input[inputNum];
+		if (a.matches("[0-9]+")) return Double.parseDouble(a);
+		return a;
 	}
 	
 	////////SINGLE VALUE FUNCTIONS////////
@@ -125,6 +144,7 @@ public class PlateInterpreter {
 		System.out.println(b instanceof Double);
 		if (a instanceof String && b instanceof Double) {
 			String s = "";
+			System.out.println((Double) b);
 			for (int i = 0; i < (Double) b; i++) {
 				s += a;
 			}
