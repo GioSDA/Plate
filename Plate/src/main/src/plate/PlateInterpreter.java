@@ -31,11 +31,11 @@ public class PlateInterpreter {
 	
 	public Object eval(String code) {
 		char c = code.charAt(0);
-		if (numbers.contains(c)) {
+		if (numbers.contains(c)) {			
 			double num = 0;
 			for (int i = 0; i < code.length(); i++) {
 				char ca = code.charAt(i);
-				if (onefunctions.contains(ca) || twofunctions.contains(ca) || values.contains(ca) || ca == ',') {
+				if (onefunctions.contains(ca) || twofunctions.contains(ca) || ca == ',') {
 					return num;
 				} else {
 					num *= 100;
@@ -49,7 +49,6 @@ public class PlateInterpreter {
 				return absolute(eval(code.substring(1)));
 			case 'p':
 				Object a = new Object();
-				System.out.println(a = eval(code.substring(1)));
 				return a;
 			case 'n':
 				return negate(eval(code.substring(1)));
@@ -73,9 +72,11 @@ public class PlateInterpreter {
 			switch(c) {
 			case 'i':
 				inputNum++;
+				System.out.println(input().getClass());
 				return input();
 			case 'π':
-				return Math.PI;
+				System.out.println(pi().getClass());
+				return pi();
 			}
 		}
 		return new Object();
@@ -113,6 +114,12 @@ public class PlateInterpreter {
 		return a;
 	}
 	
+	////////VALUES////////
+	
+	public Object pi() {
+		return Math.PI;
+	}
+	
 	////////SINGLE VALUE FUNCTIONS////////
 	
 	public Object absolute(Object n) {
@@ -142,6 +149,7 @@ public class PlateInterpreter {
 		if (a instanceof Double && b instanceof Double) return (Double) ((double) a * (double) b);
 		System.out.println(a instanceof String);
 		System.out.println(b instanceof Double);
+		System.out.println(a.getClass());
 		if (a instanceof String && b instanceof Double) {
 			String s = "";
 			System.out.println((Double) b);
