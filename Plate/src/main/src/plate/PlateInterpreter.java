@@ -8,8 +8,8 @@ public class PlateInterpreter {
 	int inputNum = -1;
 	String[] input;
 	
-	ArrayList<Character> values = new ArrayList<Character>(Arrays.asList('i','π'));
-	ArrayList<Character> onefunctions = new ArrayList<Character>(Arrays.asList('|', 'p', 'n', '"'));
+	ArrayList<Character> values = new ArrayList<Character>(Arrays.asList('i','π', 'a'));
+	ArrayList<Character> onefunctions = new ArrayList<Character>(Arrays.asList('|', 'p', 'n', '"', 'l', 's'));
 	ArrayList<Character> twofunctions = new ArrayList<Character>(Arrays.asList('+','-','*','/', '^'));
 	ArrayList<Character> numbers = new ArrayList<Character>(Arrays.asList('᐀','ᐁ','ᐂ','ᐃ','ᐄ','ᐅ','ᐆ','ᐇ','ᐈ','ᐉ','ᐋ','ᐌ','ᐍ','ᐎ','ᐏ','ᐐ','ᐑ','ᐒ','ᐓ','ᐔ','ᐕ','ᐖ','ᐗ','ᐘ','ᐙ','ᐚ','ᐛ','ᐜ','ᐝ','ᐞ','ᐟ','ᐠ','ᐡ','ᐢ','ᐣ','ᐤ','ᐥ','ᐦ','ᐧ','ᐨ','ᐩ','ᐪ','ᐫ','ᐬ','ᐭ','ᐮ','ᐯ','ᐰ','ᐱ','ᐲ','ᐳ','ᐴ','ᐵ','ᐶ','ᐷ','ᐸ','ᐹ','ᐺ','ᐻ','ᐼ','ᐽ','ᐾ','ᐿ','ᑀ','ᑁ','ᑂ','ᑃ','ᑄ','ᑅ','ᑆ','ᑇ','ᑈ','ᑉ','ᑋ','ᑌ','ᑍ','ᑎ','ᑏ','ᑐ','ᑑ','ᑒ','ᑓ','ᑔ','ᑕ','ᑖ','ᑗ','ᑘ','ᑙ','ᑚ','ᑛ','ᑜ','ᑝ','ᑞ','ᑟ','ᑠ','ᑡ','ᑢ','ᑣ','ᑤ','ᑥ'));
 
@@ -48,12 +48,17 @@ public class PlateInterpreter {
 			case '|':
 				return absolute(eval(code.substring(1)));
 			case 'p':
-				Object a = new Object();
+				Object a = eval(code.substring(1));
+				System.out.println(a);
 				return a;
 			case 'n':
 				return negate(eval(code.substring(1)));
 			case '"':
 				return evalString(code.substring(1));
+			case 'l':
+				return initializeList(eval(code.substring(1)));
+			case 's':
+				return split(eval(code.substring(1)));
 			}
 		} else if (twofunctions.contains(c)) {
 			switch (c) {
@@ -72,11 +77,11 @@ public class PlateInterpreter {
 			switch(c) {
 			case 'i':
 				inputNum++;
-				System.out.println(input().getClass());
 				return input();
 			case 'π':
-				System.out.println(pi().getClass());
 				return pi();
+			case 'a':
+				return initializeListEmpty();
 			}
 		}
 		return new Object();
@@ -119,6 +124,10 @@ public class PlateInterpreter {
 	public Object pi() {
 		return Math.PI;
 	}
+
+	public Object initializeListEmpty() {
+		return new ArrayList<Object>();
+	}
 	
 	////////SINGLE VALUE FUNCTIONS////////
 	
@@ -132,11 +141,33 @@ public class PlateInterpreter {
 		return 0;
 	}
 	
+	public Object initializeList(Object n) {
+		return new ArrayList<Object>(Arrays.asList(n));
+	}
+	
+	public Object split(Object n) {
+		if (n instanceof String) return new ArrayList<Object>(Arrays.asList(((String) n).split("")));
+		if (n instanceof Double) { 
+			ArrayList<Object> al = new ArrayList<Object>();
+			for (char a : ((Double) n).toString().toCharArray()) { if (a != '.') al.add(Character.getNumericValue(a)); }
+			return al;
+		}
+		return 0;
+	}
+	
 	////////DOUBLE VALUE EXPRESSIONS////////
 	
 	public Object add(Object a, Object b) {
 		if (a instanceof Double && b instanceof Double) return (Double) ((double) a + (double) b);
 		if (a instanceof String && b instanceof String) return (String) a + (String) b;
+		if (a instanceof ArrayList && b instanceof ArrayList) {
+			((ArrayList<Object>) a).addAll((ArrayList<Object>) b);
+			return a;
+		}
+		if (a instanceof ArrayList && (b instanceof Double) || (b instanceof String)) {
+			((ArrayList<Object>) a).add(b);
+			return a;
+		}
 		return 0;
 	}
 	
@@ -147,12 +178,8 @@ public class PlateInterpreter {
 	
 	public Object multiply(Object a, Object b) {
 		if (a instanceof Double && b instanceof Double) return (Double) ((double) a * (double) b);
-		System.out.println(a instanceof String);
-		System.out.println(b instanceof Double);
-		System.out.println(a.getClass());
 		if (a instanceof String && b instanceof Double) {
 			String s = "";
-			System.out.println((Double) b);
 			for (int i = 0; i < (Double) b; i++) {
 				s += a;
 			}
