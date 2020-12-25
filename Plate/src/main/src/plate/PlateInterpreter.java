@@ -8,9 +8,9 @@ public class PlateInterpreter {
 	int inputNum = -1;
 	String[] input;
 	
-	ArrayList<Character> values = new ArrayList<Character>(Arrays.asList('i','π', 'a'));
-	ArrayList<Character> onefunctions = new ArrayList<Character>(Arrays.asList('|', 'p', 'n', '"', 'l', 's'));
-	ArrayList<Character> twofunctions = new ArrayList<Character>(Arrays.asList('+','-','*','/', '^'));
+	ArrayList<Character> nilads = new ArrayList<Character>(Arrays.asList('i','π', 'a'));
+	ArrayList<Character> monads = new ArrayList<Character>(Arrays.asList('|', 'p', 'n', '"', 'l', 's'));
+	ArrayList<Character> dyads = new ArrayList<Character>(Arrays.asList('+','-','*','/', '^', '%'));
 	ArrayList<Character> numbers = new ArrayList<Character>(Arrays.asList('᐀','ᐁ','ᐂ','ᐃ','ᐄ','ᐅ','ᐆ','ᐇ','ᐈ','ᐉ','ᐋ','ᐌ','ᐍ','ᐎ','ᐏ','ᐐ','ᐑ','ᐒ','ᐓ','ᐔ','ᐕ','ᐖ','ᐗ','ᐘ','ᐙ','ᐚ','ᐛ','ᐜ','ᐝ','ᐞ','ᐟ','ᐠ','ᐡ','ᐢ','ᐣ','ᐤ','ᐥ','ᐦ','ᐧ','ᐨ','ᐩ','ᐪ','ᐫ','ᐬ','ᐭ','ᐮ','ᐯ','ᐰ','ᐱ','ᐲ','ᐳ','ᐴ','ᐵ','ᐶ','ᐷ','ᐸ','ᐹ','ᐺ','ᐻ','ᐼ','ᐽ','ᐾ','ᐿ','ᑀ','ᑁ','ᑂ','ᑃ','ᑄ','ᑅ','ᑆ','ᑇ','ᑈ','ᑉ','ᑋ','ᑌ','ᑍ','ᑎ','ᑏ','ᑐ','ᑑ','ᑒ','ᑓ','ᑔ','ᑕ','ᑖ','ᑗ','ᑘ','ᑙ','ᑚ','ᑛ','ᑜ','ᑝ','ᑞ','ᑟ','ᑠ','ᑡ','ᑢ','ᑣ','ᑤ','ᑥ'));
 
 	public PlateInterpreter(String[] input) {
@@ -24,7 +24,7 @@ public class PlateInterpreter {
 	public void interpret(String code) {
 		if (!code.contains("p")) code = "p" + code;
 		
-		if (onefunctions.contains(code.charAt(0)) || twofunctions.contains(code.charAt(0))) {
+		if (monads.contains(code.charAt(0)) || dyads.contains(code.charAt(0))) {
 			eval(code);
 		}
 	}
@@ -35,7 +35,7 @@ public class PlateInterpreter {
 			double num = 0;
 			for (int i = 0; i < code.length(); i++) {
 				char ca = code.charAt(i);
-				if (onefunctions.contains(ca) || twofunctions.contains(ca) || ca == ',') {
+				if (monads.contains(ca) || dyads.contains(ca) || ca == ',') {
 					return num;
 				} else {
 					num *= 100;
@@ -43,7 +43,7 @@ public class PlateInterpreter {
 				}
 			}
 			return num;
-		} else if (onefunctions.contains(c)) {
+		} else if (monads.contains(c)) {
 			switch (c) {
 			case '|':
 				return absolute(eval(code.substring(1)));
@@ -60,7 +60,7 @@ public class PlateInterpreter {
 			case 's':
 				return split(eval(code.substring(1)));
 			}
-		} else if (twofunctions.contains(c)) {
+		} else if (dyads.contains(c)) {
 			switch (c) {
 			case '+':
 				return add(eval(code.substring(1)),eval(code.substring(evalLength(code.substring(1))+2)));
@@ -72,8 +72,10 @@ public class PlateInterpreter {
 				return divide(eval(code.substring(1)),eval(code.substring(evalLength(code.substring(1))+2)));
 			case '^':
 				return exponentiate(eval(code.substring(1)),eval(code.substring(evalLength(code.substring(1))+2)));
+			case '%':
+				return modulo(eval(code.substring(1)),eval(code.substring(evalLength(code.substring(1))+2)));
 			}
-		} else if (values.contains(c)) {
+		} else if (nilads.contains(c)) {
 			switch(c) {
 			case 'i':
 				inputNum++;
@@ -100,7 +102,7 @@ public class PlateInterpreter {
 	public int evalLength(String code) {
 		int a = 0;
 		for (int i = 0; i < code.length(); i++) {
-			if (twofunctions.contains(code.charAt(i))) {
+			if (dyads.contains(code.charAt(i))) {
 				a++;
 			} else if (code.charAt(i) == ',') {
 				a--;
@@ -195,6 +197,11 @@ public class PlateInterpreter {
 	
 	public Object exponentiate(Object a, Object b) {
 		if (a instanceof Double && b instanceof Double) return (Double) Math.pow((double) a, (double) b);
+		return 0;
+	}
+	
+	public Object modulo(Object a, Object b) {
+		if (a instanceof Double && b instanceof Double) return (Double) (double) a % (double) b;
 		return 0;
 	}
 	
